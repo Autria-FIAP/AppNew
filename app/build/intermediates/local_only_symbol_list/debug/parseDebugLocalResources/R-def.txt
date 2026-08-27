@@ -1,3 +1,9 @@
 R_DEF: Internal format may change without notice
 local
+drawable autrialogo
+drawable autriavetor
+drawable baseline_settings_24
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+drawable imgoculos
 style Theme.Autria

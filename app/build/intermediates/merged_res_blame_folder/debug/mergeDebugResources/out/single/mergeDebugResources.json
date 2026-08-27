@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.fiap.autria.app-debug-47:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.fiap.autria.app-main-49:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.fiap.autria.app-debug-47:/drawable_autriavetor.xml.flat",
+        "source": "com.fiap.autria.app-main-49:/drawable/autriavetor.xml"
+    },
+    {
+        "merged": "com.fiap.autria.app-debug-47:/drawable_baseline_settings_24.xml.flat",
+        "source": "com.fiap.autria.app-main-49:/drawable/baseline_settings_24.xml"
+    },
+    {
+        "merged": "com.fiap.autria.app-debug-47:/drawable_imgoculos.png.flat",
+        "source": "com.fiap.autria.app-main-49:/drawable/imgoculos.png"
+    },
+    {
+        "merged": "com.fiap.autria.app-debug-47:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.fiap.autria.app-main-49:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.fiap.autria.app-debug-47:/drawable_autrialogo.png.flat",
+        "source": "com.fiap.autria.app-main-49:/drawable/autrialogo.png"
+    }
+]

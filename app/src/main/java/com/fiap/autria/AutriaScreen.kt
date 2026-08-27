@@ -2,6 +2,7 @@ package com.fiap.autria
 
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -19,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,14 +37,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fiap.autria.R
+import com.fiap.autria.ui.theme.AutriaTheme
 
-private val Night = Color(0xFF050A12)
-private val Card = Color(0xFF101725)
-private val Purple = Color(0xFF8B4DFF)
-private val PurpleDark = Color(0xFF5221AF)
-private val Danger = Color(0xFFFF3D3D)
-private val Safe = Color(0xFF5EE578)
-private val Secondary = Color(0xFFC4C4D5)
+// ---------------------------------------------------------------------------
+// Cores "extras" que o Material3 ColorScheme não tem por padrão
+// (sucesso/perigo). Se preferir, mova isto para o Color.kt do projeto autria
+// e reaproveite em qualquer tela.
+// ---------------------------------------------------------------------------
+private val Safe = Color(0xFF5EE578)   // pode virar "Success" no Color.kt
+// Danger não precisa de cor própria: usamos MaterialTheme.colorScheme.error
 
 data class NavigationState(
     val connected: Boolean = false,
@@ -72,11 +75,15 @@ fun AutriaApp(viewModel: AutriaViewModel = viewModel()) {
     LaunchedEffect(notice) {
         notice?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
     }
-    AutriaScreen(
-        state = state,
-        onAudioChange = viewModel::setAudioEnabled,
-        onEmergency = viewModel::triggerEmergency,
-    )
+    // Antes: MaterialTheme(colorScheme = darkColorScheme(...)) manual dentro do AutriaScreen.
+    // Agora: usamos o tema oficial do projeto autria.
+    AutriaTheme(darkTheme = true) {
+        AutriaScreen(
+            state = state,
+            onAudioChange = viewModel::setAudioEnabled,
+            onEmergency = viewModel::triggerEmergency,
+        )
+    }
 }
 
 @Composable
@@ -85,26 +92,26 @@ private fun AutriaScreen(
     onAudioChange: (Boolean) -> Unit,
     onEmergency: () -> Unit,
 ) {
-    MaterialTheme(colorScheme = darkColorScheme(background = Night, surface = Card, primary = Purple)) {
-        Surface(color = Night, modifier = Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxSize()) {
-                Column(
-                    Modifier.weight(1f).verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Spacer(Modifier.height(30.dp))
-                    Header()
-                    ConnectionCard(state.connected, state.battery)
-                    StopAlert(state)
-                    DistanceCard(state.distanceCm, state.sensorValid)
-                    DirectionRow(state)
-                    VoiceCard(state.audioEnabled, onAudioChange)
-                    EmergencyButton(onEmergency)
-                    Spacer(Modifier.height(4.dp))
-                }
-                BottomNavigation()
+    // O wrapper MaterialTheme(...) manual foi removido daqui: quem define
+    // cores/tipografia agora é o AutriaTheme, chamado uma vez lá em cima.
+    Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
+            Column(
+                Modifier.weight(1f).verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Spacer(Modifier.height(30.dp))
+                Header()
+                ConnectionCard(state.connected, state.battery)
+                StopAlert(state)
+                DistanceCard(state.distanceCm, state.sensorValid)
+                DirectionRow(state)
+                VoiceCard(state.audioEnabled, onAudioChange)
+                EmergencyButton(onEmergency)
+                Spacer(Modifier.height(4.dp))
             }
+            BottomNavigation()
         }
     }
 }
@@ -112,16 +119,39 @@ private fun AutriaScreen(
 @Composable
 private fun Header() {
     Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Default.Menu, "Abrir menu", tint = Color.White, modifier = Modifier.size(34.dp))
+        Icon(
+            Icons.Default.Menu, "Abrir menu",
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.size(34.dp)
+        )
         Spacer(Modifier.weight(1f))
-        LogoMark(46.dp)
+
+        // Logo real do autria (aumentada, sem fundo/container).
+        Image(
+            painter = painterResource(id = R.drawable.autrialogo),
+            contentDescription = "Logo Autria",
+            modifier = Modifier.size(72.dp)
+        )
+
         Spacer(Modifier.width(10.dp))
         Column {
-            Text("AUTRIA", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
-            Text("NAVEGAÇÃO ASSISTIDA", color = Secondary, fontSize = 11.sp, letterSpacing = .8.sp)
+            Text(
+                "AUTRIA",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 25.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp
+            )
+            Text(
+                "NAVEGAÇÃO ASSISTIDA",
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = 11.sp, letterSpacing = .8.sp
+            )
         }
         Spacer(Modifier.weight(1f))
-        Box(Modifier.size(52.dp).clip(RoundedCornerShape(16.dp)).background(Brush.linearGradient(listOf(PurpleDark, Purple))), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier.size(52.dp).clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
+        ) {
             Icon(Icons.Default.Headphones, "Áudio", tint = Color.White, modifier = Modifier.size(29.dp))
         }
     }
@@ -131,15 +161,27 @@ private fun Header() {
 private fun ConnectionCard(connected: Boolean, battery: Int) {
     AppCard(Modifier.fillMaxWidth(), gradient = true) {
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(54.dp).background(Color(0xFF24204B), CircleShape), contentAlignment = Alignment.Center) { GlassesIcon(Color.White) }
+            // Antes: Box com fundo primaryContainer (laranja) atrás da imagem.
+            // Agora: só a imagem dos óculos, maior e sem fundo colorido.
+            Image(
+                painter = painterResource(id = R.drawable.imgoculos),
+                contentDescription = "Óculos Autria",
+                modifier = Modifier.size(54.dp)
+            )
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Text(if (connected) "Óculos conectado" else "Óculos desconectado", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Text(if (connected) "Link estável" else "Verifique a conexão", color = Color(0xFFC3A5FF), fontSize = 16.sp)
+                Text(
+                    if (connected) "Óculos conectado" else "Óculos desconectado",
+                    color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold
+                )
+                Text(
+                    if (connected) "Link estável" else "Verifique a conexão",
+                    color = MaterialTheme.colorScheme.secondary, fontSize = 16.sp
+                )
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("Bateria", color = Color.White, fontSize = 13.sp)
-                Text("$battery%", color = Color.White, fontSize = 23.sp)
+                Text("Bateria", color = MaterialTheme.colorScheme.onBackground, fontSize = 13.sp)
+                Text("$battery%", color = MaterialTheme.colorScheme.onBackground, fontSize = 23.sp)
             }
             Spacer(Modifier.width(8.dp))
             BatteryIcon(battery)
@@ -157,10 +199,12 @@ private fun StopAlert(state: NavigationState) {
         "STOP" -> "PARE"
         else -> if (state.backendOnline) "AGUARDE" else "SEM CONEXÃO"
     }
+    // Antes: dois pares de hex fixos (vermelho / roxo).
+    // Agora: error do tema para alerta e primary para o estado normal.
     val colors = if (isStop) {
-        listOf(Color(0xFFFF4E42), Color(0xFFB91418))
+        listOf(MaterialTheme.colorScheme.error, MaterialTheme.colorScheme.errorContainer)
     } else {
-        listOf(Color(0xFF7136D8), Color(0xFF281251))
+        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.background)
     }
     Box(
         Modifier.fillMaxWidth().height(252.dp).clip(RoundedCornerShape(22.dp))
@@ -172,9 +216,13 @@ private fun StopAlert(state: NavigationState) {
             Text(title, color = Color.White, fontSize = 48.sp, lineHeight = 54.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
             Text(state.guideMessage, color = Color.White, fontSize = 19.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 14.dp))
             Spacer(Modifier.height(12.dp))
-            Row(Modifier.clip(CircleShape).background(Color(0x663D0000)).padding(horizontal = 20.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier.clip(CircleShape).background(Color(0x33000000)).padding(horizontal = 20.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(Icons.Default.VolumeUp, null, tint = Color.White, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(7.dp)); Text(if (state.speaking && state.audioEnabled) "FALANDO" else "MONITORANDO", color = Color.White, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.width(7.dp))
+                Text(if (state.speaking && state.audioEnabled) "FALANDO" else "MONITORANDO", color = Color.White, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -184,21 +232,31 @@ private fun StopAlert(state: NavigationState) {
 private fun DistanceCard(distance: Int?, valid: Boolean) {
     AppCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text("DISTÂNCIA FRONTAL", color = Purple, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            Text("DISTÂNCIA FRONTAL", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(72.dp).border(2.dp, Color(0xFF302652), CircleShape), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Sensors, null, tint = Purple, modifier = Modifier.size(46.dp))
+                Box(
+                    Modifier.size(72.dp).border(2.dp, MaterialTheme.colorScheme.outline, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Sensors, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(46.dp))
                 }
                 Spacer(Modifier.width(18.dp))
                 Column(Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.Bottom) {
-                        Text(distance?.toString() ?: "--", color = Color.White, fontSize = 48.sp, fontWeight = FontWeight.Bold)
-                        if (distance != null) Text(" cm", color = Color.White, fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
+                        Text(distance?.toString() ?: "--", color = MaterialTheme.colorScheme.onBackground, fontSize = 48.sp, fontWeight = FontWeight.Bold)
+                        if (distance != null) Text(" cm", color = MaterialTheme.colorScheme.onBackground, fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
                     }
-                    Text(if (valid) "Leitura do sensor" else "Sensor sem leitura", color = Secondary, fontSize = 16.sp)
+                    Text(if (valid) "Leitura do sensor" else "Sensor sem leitura", color = MaterialTheme.colorScheme.secondary, fontSize = 16.sp)
                 }
                 val close = valid && distance != null && distance <= 30
-                Text(if (close) "MUITO PRÓXIMO" else if (valid) "SEGURO" else "OFFLINE", color = if (close) Color(0xFFFF5B5B) else if (valid) Safe else Secondary, fontWeight = FontWeight.Bold, modifier = Modifier.border(1.dp, if (close) Color(0xFF7B2328) else Color(0xFF294B36), CircleShape).padding(horizontal = 12.dp, vertical = 10.dp))
+                Text(
+                    if (close) "MUITO PRÓXIMO" else if (valid) "SEGURO" else "OFFLINE",
+                    color = if (close) MaterialTheme.colorScheme.error else if (valid) Safe else MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .border(1.dp, if (close) MaterialTheme.colorScheme.error else Safe, CircleShape)
+                        .padding(horizontal = 12.dp, vertical = 10.dp)
+                )
             }
         }
     }
@@ -217,11 +275,14 @@ private fun DirectionRow(state: NavigationState) {
 private fun DirectionCard(label: String, free: Boolean, icon: ImageVector, modifier: Modifier) {
     AppCard(modifier.height(142.dp)) {
         Column(Modifier.fillMaxSize().padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
-            Text(label, color = Secondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            Box(Modifier.size(62.dp).border(4.dp, if (free) Color(0xFF493282) else Danger, CircleShape), contentAlignment = Alignment.Center) {
-                Icon(icon, null, tint = if (free) Purple else Danger, modifier = Modifier.size(38.dp))
+            Text(label, color = MaterialTheme.colorScheme.secondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Box(
+                Modifier.size(62.dp).border(4.dp, if (free) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.error, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icon, null, tint = if (free) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, modifier = Modifier.size(38.dp))
             }
-            Text(if (free) "LIVRE" else "OBSTRUÍDO", color = if (free) Safe else Danger, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(if (free) "LIVRE" else "OBSTRUÍDO", color = if (free) Safe else MaterialTheme.colorScheme.error, fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -230,13 +291,22 @@ private fun DirectionCard(label: String, free: Boolean, icon: ImageVector, modif
 private fun VoiceCard(enabled: Boolean, onEnabledChange: (Boolean) -> Unit) {
     AppCard(Modifier.fillMaxWidth()) {
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(50.dp).background(Brush.linearGradient(listOf(PurpleDark, Purple)), CircleShape), contentAlignment = Alignment.Center) { Icon(Icons.Default.VolumeUp, null, tint = Color.White) }
+            Box(
+                Modifier.size(50.dp).background(MaterialTheme.colorScheme.primary, CircleShape),
+                contentAlignment = Alignment.Center
+            ) { Icon(Icons.Default.VolumeUp, null, tint = Color.White) }
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Text("Orientação por voz", color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-                Text("Orientações falando em tempo real", color = Secondary, fontSize = 13.sp)
+                Text("Orientação por voz", color = MaterialTheme.colorScheme.onBackground, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                Text("Orientações falando em tempo real", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp)
             }
-            Switch(checked = enabled, onCheckedChange = onEnabledChange, colors = SwitchDefaults.colors(checkedTrackColor = Purple, checkedThumbColor = Color.White))
+            Switch(
+                checked = enabled, onCheckedChange = onEnabledChange,
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    checkedThumbColor = Color.White
+                )
+            )
         }
     }
 }
@@ -245,7 +315,7 @@ private fun VoiceCard(enabled: Boolean, onEnabledChange: (Boolean) -> Unit) {
 private fun EmergencyButton(onEmergency: () -> Unit) {
     Row(
         Modifier.fillMaxWidth().height(78.dp).clip(RoundedCornerShape(22.dp))
-            .background(Brush.horizontalGradient(listOf(Color(0xFFD21D20), Color(0xFFFF3737))))
+            .background(MaterialTheme.colorScheme.error)
             .pointerInput(Unit) {
                 detectTapGestures(onPress = {
                     val startedAt = System.currentTimeMillis()
@@ -268,7 +338,12 @@ private fun EmergencyButton(onEmergency: () -> Unit) {
 
 @Composable
 private fun BottomNavigation() {
-    Row(Modifier.fillMaxWidth().height(82.dp).background(Color(0xFF0A111D)).navigationBarsPadding(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth().height(82.dp)
+            .background(MaterialTheme.colorScheme.surface)
+            .navigationBarsPadding(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         NavItem("Início", Icons.Outlined.Home, true, Modifier.weight(1f))
         NavItem("Óculos", Icons.Default.RemoveRedEye, false, Modifier.weight(1f))
         NavItem("Configurações", Icons.Outlined.Settings, false, Modifier.weight(1f))
@@ -278,34 +353,33 @@ private fun BottomNavigation() {
 @Composable
 private fun NavItem(text: String, icon: ImageVector, selected: Boolean, modifier: Modifier) {
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        if (selected) Box(Modifier.width(44.dp).height(3.dp).background(Purple, CircleShape)) else Spacer(Modifier.height(3.dp))
-        Spacer(Modifier.height(6.dp)); Icon(icon, text, tint = if (selected) Purple else Secondary, modifier = Modifier.size(29.dp))
-        Text(text, color = if (selected) Purple else Secondary, fontSize = 12.sp)
+        if (selected)
+            Box(Modifier.width(44.dp).height(3.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
+        else
+            Spacer(Modifier.height(3.dp))
+        Spacer(Modifier.height(6.dp))
+        Icon(icon, text, tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary, modifier = Modifier.size(29.dp))
+        Text(text, color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
     }
 }
 
 @Composable
 private fun AppCard(modifier: Modifier, gradient: Boolean = false, content: @Composable BoxScope.() -> Unit) {
-    Box(modifier.clip(RoundedCornerShape(20.dp)).background(if (gradient) Brush.horizontalGradient(listOf(Color(0xFF17152F), Color(0xFF121629))) else Brush.linearGradient(listOf(Card, Color(0xFF0B111D)))).border(1.dp, Color(0xFF1C2635), RoundedCornerShape(20.dp)), content = content)
+    Box(
+        modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(
+                if (gradient)
+                    Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.surfaceVariant))
+                else
+                    Brush.linearGradient(listOf(MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.surface))
+            )
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp)),
+        content = content
+    )
 }
 
-@Composable
-private fun LogoMark(size: androidx.compose.ui.unit.Dp) {
-    Canvas(Modifier.size(size)) {
-        val path = androidx.compose.ui.graphics.Path().apply { moveTo(this@Canvas.size.width * .5f, 2f); lineTo(this@Canvas.size.width * .92f, this@Canvas.size.height * .88f); lineTo(this@Canvas.size.width * .57f, this@Canvas.size.height * .68f); lineTo(this@Canvas.size.width * .30f, this@Canvas.size.height * .91f); lineTo(this@Canvas.size.width * .08f, this@Canvas.size.height * .84f); close() }
-        drawPath(path, Brush.linearGradient(listOf(Purple, PurpleDark)), style = Stroke(width = 9f, cap = StrokeCap.Round))
-    }
-}
-
-@Composable
-private fun GlassesIcon(color: Color) {
-    Canvas(Modifier.size(36.dp, 20.dp)) {
-        drawOval(color, topLeft = Offset(1f, 4f), size = Size(size.width * .4f, size.height * .65f), style = Stroke(4f))
-        drawOval(color, topLeft = Offset(size.width * .59f, 4f), size = Size(size.width * .4f, size.height * .65f), style = Stroke(4f))
-        drawLine(color, Offset(size.width * .4f, size.height * .35f), Offset(size.width * .6f, size.height * .35f), 4f)
-    }
-}
-
+// BatteryIcon continua como um desenho vetorial simples.
 @Composable
 private fun BatteryIcon(percent: Int) {
     Canvas(Modifier.size(44.dp, 28.dp)) {
@@ -317,18 +391,22 @@ private fun BatteryIcon(percent: Int) {
 
 @Preview(showBackground = true, widthDp = 393, heightDp = 852)
 @Composable
-private fun PreviewAutria() = AutriaScreen(
-    state = NavigationState(
-        connected = true,
-        battery = 78,
-        distanceCm = 20,
-        sensorValid = true,
-        action = "STOP",
-        guideMessage = "Pare. Obstáculo muito próximo.",
-        urgent = true,
-        centerFree = false,
-        backendOnline = true,
-    ),
-    onAudioChange = {},
-    onEmergency = {},
-)
+private fun PreviewAutria() {
+    AutriaTheme(darkTheme = true) {
+        AutriaScreen(
+            state = NavigationState(
+                connected = true,
+                battery = 78,
+                distanceCm = 20,
+                sensorValid = true,
+                action = "STOP",
+                guideMessage = "Pare. Obstáculo muito próximo.",
+                urgent = true,
+                centerFree = false,
+                backendOnline = true,
+            ),
+            onAudioChange = {},
+            onEmergency = {},
+        )
+    }
+}
