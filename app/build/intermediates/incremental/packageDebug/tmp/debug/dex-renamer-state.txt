@@ -1,10 +1,10 @@
-#Thu Aug 27 00:52:45 GMT-03:00 2026
-base.0=C\:\\Users\\macar\\StudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=C\:\\Users\\macar\\StudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.2=C\:\\Users\\macar\\StudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
-base.3=C\:\\Users\\macar\\StudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\2\\classes.dex
-base.4=C\:\\Users\\macar\\StudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\3\\classes.dex
-base.5=C\:\\Users\\macar\\StudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
+#Thu Aug 27 01:29:37 BRT 2026
+base.0=C\:\\Users\\User\\AndroidStudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=C\:\\Users\\User\\AndroidStudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.2=C\:\\Users\\User\\AndroidStudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
+base.3=C\:\\Users\\User\\AndroidStudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\2\\classes.dex
+base.4=C\:\\Users\\User\\AndroidStudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\3\\classes.dex
+base.5=C\:\\Users\\User\\AndroidStudioProjects\\AppNew\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.2=13/classes.dex

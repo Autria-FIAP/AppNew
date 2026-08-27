@@ -15,8 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -111,23 +109,20 @@ private fun AutriaScreen(
     // O wrapper MaterialTheme(...) manual foi removido daqui: quem define
     // cores/tipografia agora é o AutriaTheme, chamado uma vez lá em cima.
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize()) {
-            Column(
-                Modifier.weight(1f).verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Spacer(Modifier.height(30.dp))
-                Header(onSettingsClick = onSettingsClick)
-                ConnectionCard(state.connected, state.battery)
-                StopAlert(state)
-                DistanceCard(state.distanceCm, state.sensorValid)
-                DirectionRow(state)
-                VoiceCard(state.audioEnabled, onAudioChange)
-                EmergencyButton(onEmergency)
-                Spacer(Modifier.height(4.dp))
-            }
-            BottomNavigation()
+        Column(
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Spacer(Modifier.height(30.dp))
+            Header(onSettingsClick = onSettingsClick)
+            ConnectionCard(state.connected, state.battery)
+            StopAlert(state)
+            DistanceCard(state.distanceCm, state.sensorValid)
+            DirectionRow(state)
+            VoiceCard(state.audioEnabled, onAudioChange)
+            EmergencyButton(onEmergency)
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
@@ -164,14 +159,7 @@ private fun Header(onSettingsClick: () -> Unit) {
                 fontSize = 11.sp, letterSpacing = .8.sp
             )
         }
-        Spacer(Modifier.weight(1f))
-        Box(
-            Modifier.size(52.dp).clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.primary),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(Icons.Default.Headphones, "Áudio", tint = Color.White, modifier = Modifier.size(29.dp))
-        }
+        // O ícone de fone de ouvido que ficava aqui no canto direito foi removido.
     }
 }
 
@@ -351,33 +339,6 @@ private fun EmergencyButton(onEmergency: () -> Unit) {
             Text("EMERGÊNCIA", color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text("Toque e segure por 3 segundos", color = Color.White, fontSize = 14.sp)
         }
-    }
-}
-
-@Composable
-private fun BottomNavigation() {
-        Row(
-            Modifier.fillMaxWidth().height(82.dp)
-                .background(MaterialTheme.colorScheme.surface)
-                .navigationBarsPadding(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            NavItem("Início", Icons.Outlined.Home, true, Modifier.weight(1f))
-            NavItem("Óculos", Icons.Default.RemoveRedEye, false, Modifier.weight(1f))
-            NavItem("Configurações", Icons.Outlined.Settings, false, Modifier.weight(1f))
-        }
-    }
-
-@Composable
-private fun NavItem(text: String, icon: ImageVector, selected: Boolean, modifier: Modifier, onClick: () -> Unit = {}) {
-    Column(modifier.clickable { onClick() }, horizontalAlignment = Alignment.CenterHorizontally) {
-        if (selected)
-            Box(Modifier.width(44.dp).height(3.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
-        else
-            Spacer(Modifier.height(3.dp))
-        Spacer(Modifier.height(6.dp))
-        Icon(icon, text, tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary, modifier = Modifier.size(29.dp))
-        Text(text, color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
     }
 }
 
