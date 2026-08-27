@@ -4,7 +4,24 @@
             "outputFile": "com.fiap.autria.app-mergeDebugResources-45:/values-tr/values-tr.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\9.0.0\\transforms\\2f4ff974c2849a84d8ef4ee3f9dc58e9\\transformed\\core-1.13.1\\res\\values-tr\\values-tr.xml",
+                    "source": "C:\\Users\\macar\\.gradle\\caches\\9.0.0\\transforms\\eac1a3dc90e8c13771dba633e12137d1\\transformed\\material-release\\res\\values-tr\\values-tr.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "87",
+                        "endOffsets": "138"
+                    },
+                    "to": {
+                        "startLines": "74",
+                        "startColumns": "4",
+                        "startOffsets": "7701",
+                        "endColumns": "87",
+                        "endOffsets": "7784"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\macar\\.gradle\\caches\\9.0.0\\transforms\\2f4ff974c2849a84d8ef4ee3f9dc58e9\\transformed\\core-1.13.1\\res\\values-tr\\values-tr.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -21,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\9.0.0\\transforms\\0e80102392ef65073f151705cd7bfc01\\transformed\\material3-release\\res\\values-tr\\values-tr.xml",
+                    "source": "C:\\Users\\macar\\.gradle\\caches\\9.0.0\\transforms\\0e80102392ef65073f151705cd7bfc01\\transformed\\material3-release\\res\\values-tr\\values-tr.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -38,7 +55,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\9.0.0\\transforms\\cf860757aeba4da7bd78aadb2db7e078\\transformed\\foundation-release\\res\\values-tr\\values-tr.xml",
+                    "source": "C:\\Users\\macar\\.gradle\\caches\\9.0.0\\transforms\\cf860757aeba4da7bd78aadb2db7e078\\transformed\\foundation-release\\res\\values-tr\\values-tr.xml",
                     "from": {
                         "startLines": "2,3,4",
                         "startColumns": "4,4,4",
@@ -55,7 +72,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\9.0.0\\transforms\\a7c4636fa3a34be79ae522f06502ee2e\\transformed\\ui-release\\res\\values-tr\\values-tr.xml",
+                    "source": "C:\\Users\\macar\\.gradle\\caches\\9.0.0\\transforms\\a7c4636fa3a34be79ae522f06502ee2e\\transformed\\ui-release\\res\\values-tr\\values-tr.xml",
                     "from": {
                         "startLines": "3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -69,23 +86,6 @@
                         "startOffsets": "902,995,1079,1174,1274,1358,1441,7789,7877,7961,8041,8129,8200,8284,8358,8433,8606,8684,8752",
                         "endColumns": "92,83,94,99,83,82,99,87,83,79,87,70,83,73,74,71,77,67,117",
                         "endOffsets": "990,1074,1169,1269,1353,1436,1536,7872,7956,8036,8124,8195,8279,8353,8428,8500,8679,8747,8865"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\9.0.0\\transforms\\eac1a3dc90e8c13771dba633e12137d1\\transformed\\material-release\\res\\values-tr\\values-tr.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "87",
-                        "endOffsets": "138"
-                    },
-                    "to": {
-                        "startLines": "74",
-                        "startColumns": "4",
-                        "startOffsets": "7701",
-                        "endColumns": "87",
-                        "endOffsets": "7784"
                     }
                 }
             ]

@@ -1,6 +1,8 @@
 package com.fiap.autria
 
 import android.widget.Toast
+import com.fiap.autria.settings.SettingScreen
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -72,17 +74,30 @@ fun AutriaApp(viewModel: AutriaViewModel = viewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val notice by viewModel.notice.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showSettings by remember { mutableStateOf(false) }
+    var isDarkTheme by remember { mutableStateOf(true) }
+
     LaunchedEffect(notice) {
         notice?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
     }
+
     // Antes: MaterialTheme(colorScheme = darkColorScheme(...)) manual dentro do AutriaScreen.
     // Agora: usamos o tema oficial do projeto autria.
-    AutriaTheme(darkTheme = true) {
-        AutriaScreen(
-            state = state,
-            onAudioChange = viewModel::setAudioEnabled,
-            onEmergency = viewModel::triggerEmergency,
-        )
+    AutriaTheme(darkTheme = isDarkTheme) {
+        if (showSettings) {
+            SettingScreen(
+                onBackClick = { showSettings = false },
+                onToggleTheme = { isDarkTheme = !isDarkTheme },
+                onAboutClick = { }
+            )
+        } else {
+            AutriaScreen(
+                state = state,
+                onAudioChange = viewModel::setAudioEnabled,
+                onEmergency = viewModel::triggerEmergency,
+                onSettingsClick = { showSettings = true }
+            )
+        }
     }
 }
 
@@ -91,6 +106,7 @@ private fun AutriaScreen(
     state: NavigationState,
     onAudioChange: (Boolean) -> Unit,
     onEmergency: () -> Unit,
+    onSettingsClick: () -> Unit,
 ) {
     // O wrapper MaterialTheme(...) manual foi removido daqui: quem define
     // cores/tipografia agora é o AutriaTheme, chamado uma vez lá em cima.
@@ -102,7 +118,7 @@ private fun AutriaScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Spacer(Modifier.height(30.dp))
-                Header()
+                Header(onSettingsClick = onSettingsClick)
                 ConnectionCard(state.connected, state.battery)
                 StopAlert(state)
                 DistanceCard(state.distanceCm, state.sensorValid)
@@ -117,12 +133,14 @@ private fun AutriaScreen(
 }
 
 @Composable
-private fun Header() {
+private fun Header(onSettingsClick: () -> Unit) {
     Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            Icons.Default.Menu, "Abrir menu",
+            Icons.Default.Settings, "Configurações",
             tint = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.size(34.dp)
+            modifier = Modifier
+                .size(34.dp)
+                .clickable { onSettingsClick() }
         )
         Spacer(Modifier.weight(1f))
 
@@ -338,21 +356,21 @@ private fun EmergencyButton(onEmergency: () -> Unit) {
 
 @Composable
 private fun BottomNavigation() {
-    Row(
-        Modifier.fillMaxWidth().height(82.dp)
-            .background(MaterialTheme.colorScheme.surface)
-            .navigationBarsPadding(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        NavItem("Início", Icons.Outlined.Home, true, Modifier.weight(1f))
-        NavItem("Óculos", Icons.Default.RemoveRedEye, false, Modifier.weight(1f))
-        NavItem("Configurações", Icons.Outlined.Settings, false, Modifier.weight(1f))
+        Row(
+            Modifier.fillMaxWidth().height(82.dp)
+                .background(MaterialTheme.colorScheme.surface)
+                .navigationBarsPadding(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NavItem("Início", Icons.Outlined.Home, true, Modifier.weight(1f))
+            NavItem("Óculos", Icons.Default.RemoveRedEye, false, Modifier.weight(1f))
+            NavItem("Configurações", Icons.Outlined.Settings, false, Modifier.weight(1f))
+        }
     }
-}
 
 @Composable
-private fun NavItem(text: String, icon: ImageVector, selected: Boolean, modifier: Modifier) {
-    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+private fun NavItem(text: String, icon: ImageVector, selected: Boolean, modifier: Modifier, onClick: () -> Unit = {}) {
+    Column(modifier.clickable { onClick() }, horizontalAlignment = Alignment.CenterHorizontally) {
         if (selected)
             Box(Modifier.width(44.dp).height(3.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
         else
@@ -407,6 +425,7 @@ private fun PreviewAutria() {
             ),
             onAudioChange = {},
             onEmergency = {},
+            onSettingsClick = {},
         )
     }
 }
