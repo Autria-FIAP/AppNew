@@ -2,12 +2,12 @@ package com.fiap.autria
 
 import android.widget.Toast
 import com.fiap.autria.settings.SettingScreen
+import com.fiap.autria.about.AboutScreen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -24,10 +24,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -73,26 +71,25 @@ fun AutriaApp(viewModel: AutriaViewModel = viewModel()) {
     val notice by viewModel.notice.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showSettings by remember { mutableStateOf(false) }
+    var showAbout by remember { mutableStateOf(false) }
     var isDarkTheme by remember { mutableStateOf(true) }
 
     LaunchedEffect(notice) {
         notice?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
     }
 
-    // Antes: MaterialTheme(colorScheme = darkColorScheme(...)) manual dentro do AutriaScreen.
-    // Agora: usamos o tema oficial do projeto autria.
     AutriaTheme(darkTheme = isDarkTheme) {
-        if (showSettings) {
-            SettingScreen(
+        when {
+            showAbout -> AboutScreen(
+                onBackClick = { showAbout = false }
+            )
+            showSettings -> SettingScreen(
                 onBackClick = { showSettings = false },
                 onToggleTheme = { isDarkTheme = !isDarkTheme },
-                onAboutClick = { }
+                onAboutClick = { showAbout = true }
             )
-        } else {
-            AutriaScreen(
+            else -> AutriaScreen(
                 state = state,
-                onAudioChange = viewModel::setAudioEnabled,
-                onEmergency = viewModel::triggerEmergency,
                 onSettingsClick = { showSettings = true }
             )
         }
@@ -102,8 +99,6 @@ fun AutriaApp(viewModel: AutriaViewModel = viewModel()) {
 @Composable
 private fun AutriaScreen(
     state: NavigationState,
-    onAudioChange: (Boolean) -> Unit,
-    onEmergency: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
     // O wrapper MaterialTheme(...) manual foi removido daqui: quem define
@@ -120,8 +115,6 @@ private fun AutriaScreen(
             StopAlert(state)
             DistanceCard(state.distanceCm, state.sensorValid)
             DirectionRow(state)
-            VoiceCard(state.audioEnabled, onAudioChange)
-            EmergencyButton(onEmergency)
             Spacer(Modifier.height(16.dp))
         }
     }
@@ -294,55 +287,6 @@ private fun DirectionCard(label: String, free: Boolean, icon: ImageVector, modif
 }
 
 @Composable
-private fun VoiceCard(enabled: Boolean, onEnabledChange: (Boolean) -> Unit) {
-    AppCard(Modifier.fillMaxWidth()) {
-        Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier.size(50.dp).background(MaterialTheme.colorScheme.primary, CircleShape),
-                contentAlignment = Alignment.Center
-            ) { Icon(Icons.Default.VolumeUp, null, tint = Color.White) }
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f)) {
-                Text("Orientação por voz", color = MaterialTheme.colorScheme.onBackground, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-                Text("Orientações falando em tempo real", color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp)
-            }
-            Switch(
-                checked = enabled, onCheckedChange = onEnabledChange,
-                colors = SwitchDefaults.colors(
-                    checkedTrackColor = MaterialTheme.colorScheme.primary,
-                    checkedThumbColor = Color.White
-                )
-            )
-        }
-    }
-}
-
-@Composable
-private fun EmergencyButton(onEmergency: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().height(78.dp).clip(RoundedCornerShape(22.dp))
-            .background(MaterialTheme.colorScheme.error)
-            .pointerInput(Unit) {
-                detectTapGestures(onPress = {
-                    val startedAt = System.currentTimeMillis()
-                    val released = tryAwaitRelease()
-                    if (released && System.currentTimeMillis() - startedAt >= 3_000L) {
-                        onEmergency()
-                    }
-                })
-            }
-            .padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(Icons.Default.Warning, null, tint = Color.White, modifier = Modifier.size(44.dp))
-        Spacer(Modifier.width(18.dp))
-        Column {
-            Text("EMERGÊNCIA", color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text("Toque e segure por 3 segundos", color = Color.White, fontSize = 14.sp)
-        }
-    }
-}
-
-@Composable
 private fun AppCard(modifier: Modifier, gradient: Boolean = false, content: @Composable BoxScope.() -> Unit) {
     Box(
         modifier
@@ -384,8 +328,6 @@ private fun PreviewAutria() {
                 centerFree = false,
                 backendOnline = true,
             ),
-            onAudioChange = {},
-            onEmergency = {},
             onSettingsClick = {},
         )
     }
